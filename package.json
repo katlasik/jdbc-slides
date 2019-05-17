@@ -4,8 +4,8 @@
   "description": "Slides for hibernate workshop",
   "main": "slides.md",
   "scripts": {
-    "start": "reveal-md --watch --css styles/style.css --theme theme/robot-lung.css slides.md",
-    "print": "reveal-md --print --css styles/style.css --theme theme/robot-lung.css slides.md "
+    "start": "reveal-md --watch --css styles/style.css --theme theme/robot-lung.css --template index.html slides.md",
+    "print": "reveal-md --print --css styles/style.css --theme theme/robot-lung.css --template index.html slides.md "
   },
   "author": "Krzysztof Atlasik <krzysztof.atlasik@pm.me>",
   "license": "ISC"
