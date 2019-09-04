@@ -1,10 +1,11 @@
 ---
-title: JDBC
+title: Wprowadzenie do JDBC
 
 ---
 
+### Wprowadzenie do JDBC
+    
 ![jdbc](assets/intro.png)
-
 ---
 
 # **<span style="color:salmon">JDBC</span>** 
@@ -24,10 +25,6 @@ Termin *warstwa trwałości* (*persistance layer*) pochodzi z pojęcia *architek
 
 ---
 
-### JDBC Internals
-
----
-
 **Driver** to interfejs odpowiadający za warstwę bezpośrednio kontaktującą się z bazą danych. Dla różnych silników bazodanowych mogę istnieć inne implementacje.
 
 ![Driver](assets/JDBC.png)
@@ -44,7 +41,7 @@ Connection c = DriverManager.getConnection(url, "user", "password");
 
 ---
 
-Łańcuch *URL* jest przekazywany do drivera i pozwala mu zlokalizować i nawiązać połaczenie z bazą dancyh.
+Łańcuch znaków *URL* jest przekazywany do drivera i pozwala mu zlokalizować i nawiązać połaczenie z bazą dancyh.
 
 **jdbc:<span style="color:orange">silnik</span>://<span style="color:purple">host</span>:<span style="color:aqua">port</span>/<span style="color:pink">baza</span>** 
 
@@ -155,7 +152,7 @@ Note: Pierwsza pula ćwiczeń (1 i 2).
 
 ##### Prepared statements
 
-**Prepared Statement** pozwalają na użycie *placeholderów* w zapytaniu:
+**Prepared Statement** pozwalają na użycie *parametrów* w zapytaniu:
 
 ```java
 String url = "jdbc:mysql://localhost:3306/test";
@@ -185,24 +182,26 @@ Note: Indeksowanie parametrów od 1. Nie są obsługiwane parametry z nazwą. Za
 
 * Domyślnie `Connection` działą w trybie **auto-commit**, co oznacza, że każde pojedyńcze zapytanie wykonywane jest jako osobna transakcja.
 
-* Żeby wykonywać więcej działań w obrębie jednej transakcji ustawiamy `connection.setAutoCommit(false)`, a następnie po wykonaniu *n* zapytań możemy wywołać:
+* Żeby wykonywać więcej działań w obrębie jednej transakcji ustawiamy `connection.setAutoCommit(false)`, a następnie po wykonaniu dowolnej ilości zapytań możemy wywołać:
 
     * `commit`, żeby zatwierdzić transakcję
     * `rollback`, żeby wycofać transakcję
     * `setSavepoint` żeby stworzyć punkt kontrolny
 
-
 ---
+
+Chcąć zatwierdzić transkację najpier wywołujemy `setAutoCommit` z parametem *false*, następnie kolejne zapytania, a na koniec
+ zatwierdzamy transakcję przy pomocy&nbsp;`commit`.
 
 ```java
 String url = "jdbc:mysql://localhost:3306/test";
 try( 
   Connection c = DriverManager.getConnection(url, "user", "password");
   Statement s1 = c.createStatement(
-          "UPDATE user SET salary = 5000 WHERE id = 1"
+    "UPDATE user SET salary = 5000 WHERE id = 1"
   );
   Statement s2 = c.createStatement(
-          "UPDATE user SET salary = 7000 WHERE id = 2"
+    "UPDATE user SET salary = 7000 WHERE id = 2"
   );  
 ) {
   c.setAutoCommit(false);
@@ -213,6 +212,50 @@ try(
   System.err.println(e);
 }
 ```
+
+---
+
+Analogicznie możemy wywołać `rollback` aby wycofać całkowicie transakcję, albo `rollback` podająć jako parametr *savepoint*,
+aby wycofać tylko do miejsca jego zapisu.
+
+```java
+connection.setAutoCommit(false);
+
+s1.executeUpdate();
+
+Savepoint sp = conn.setSavepoint("salary_update");
+
+s2.executeUpdate();
+
+int max = statement.executeQuery("SELECT max(salary) FROM user").getInt(1);
+
+if(max < 10000) {
+  connection.rollback(sp);
+} else if (max < 8000) {
+  connection.rollback();
+} else {
+  connection.commit();
+}
+```
+
+---
+##### Wywoływanie procedur
+
+Żeby wywołać procedurę na serwerze bazodanowych używamy obiektu typu `CallableStatement`:
+
+```java
+try (
+    Connection c = DriverManager.getConnection(url, "user", "password");
+    CallableStatement cs = c.prepareCall("call my_procedure(?, ?)");
+) {
+    cs.setLong(1, id);
+    cs.setLong(1, name);
+    cs.executeQuery();
+} catch (SQLException exception) {
+    System.err.println(e);
+}
+```
+
 
 Note: Reszta zadań.
 
@@ -268,7 +311,7 @@ transactionTemplate.execute( transactionStatus -> {
 
 ---
 
-Do umieszczania w zapytaniu danych pochodzących od klienta, powinniśmy używać **placeholderów**:
+Do umieszczania w zapytaniu danych pochodzących od klienta, powinniśmy używać **parametrów zapytania**:
 
 <span style="color: green; float: right; position: relative; top: -10px;">&#10004;</span>
 ```java
@@ -286,8 +329,8 @@ Do umieszczania w zapytaniu danych pochodzących od klienta, powinniśmy używa�
 ```
 ---
 
-Używanie niesprawdzonych danych w zapytaniu poprzez łączenie łańcuchów naraża nas na **SQL Injection**.
-Dane otrzymane z nieznanych źródeł należy ustawiać za pomocą **placeholderów**.
+Używanie niesprawdzonych danych w zapytaniu poprzez łączenie łańcuchów znaków naraża nas na **SQL Injection**.
+Dane otrzymane z nieznanych źródeł należy ustawiać za pomocą **parametrów zapytania**.
 
 ---
 
@@ -311,4 +354,4 @@ new BatchPreparedStatementSetter() {
 Note: W Jdbc addToBatch, executeBatch
 ---
 
-##### &#9993; krzysztof.atlasik@pm.me
+<span style="display:flex; align-items: center;">![Mail](assets/mail.png)&nbsp;&nbsp;&nbsp;[krzysztof.atlasik@pm.me](mailto:krzysztof.atlasik@pm.me)</span>
