@@ -1,3 +1,8 @@
+*.pdf
+
+node_modules
+
+*~
 
 # Created by https://www.gitignore.io/api/java,maven,intellij+all
 # Edit at https://www.gitignore.io/?templates=java,maven,intellij+all
@@ -124,7 +129,5 @@ dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
 .mvn/wrapper/maven-wrapper.jar
-
-*.pdf
 
 # End of https://www.gitignore.io/api/java,maven,intellij+all
