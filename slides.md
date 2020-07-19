@@ -177,8 +177,8 @@ try(
           "SELECT name,salary FROM employees WHERE name = ? OR age = ?" ||1||
   )
 ) {
-  s.setString(1, "Tom%"); ||2||
-  s.setInt(2, 20);
+  ps.setString(1, "Tom%"); ||2||
+  ps.setInt(2, 20);
   try(ResultSet rs = ps.executeQuery()) {
     while (rs.next()) {
       System.out.println(rs.getString("name"));
@@ -292,7 +292,7 @@ try (
     CallableStatement cs = c.prepareCall("call my_procedure(?, ?)"); ||1||
 ) {
     cs.setLong(1, id); ||2||
-    cs.setLong(1, name);
+    cs.setLong(2, name);
     cs.executeQuery();
 } catch (SQLException exception) {
     e.printStackTrace();
