@@ -10,6 +10,6 @@
   "author": "Krzysztof Atlasik <krzysztof.atlasik@pm.me>",
   "license": "ISC",
   "devDependencies": {
-    "reveal-md": "^3.4.2"
+    "reveal-md": "^5.4.0"
   }
 }
